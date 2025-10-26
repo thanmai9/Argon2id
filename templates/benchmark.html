@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Benchmark - Argon2id Analysis{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">
+        <i class="bi bi-speedometer2 text-primary"></i> Password Hashing Benchmark
+    </h1>
+    
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-sliders"></i> Benchmark Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form id="benchmarkForm">
+                        <div class="mb-3">
+                            <label class="form-label">Time Cost Values</label>
+                            <input type="text" class="form-control" id="time_costs" value="1,2,4" placeholder="e.g., 1,2,4">
+                            <div class="form-text">Comma-separated values</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Memory Cost Values (KB)</label>
+                            <input type="text" class="form-control" id="memory_costs" value="16384,65536,262144" placeholder="e.g., 16384,65536">
+                            <div class="form-text">16384 = 16MB, 65536 = 64MB</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Parallelism Values</label>
+                            <input type="text" class="form-control" id="parallelisms" value="1,2,4" placeholder="e.g., 1,2,4">
+                            <div class="form-text">Number of threads</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password_length" class="form-label">Password Length: <span id="pwd_len_val">12</span></label>
+                            <input type="range" class="form-range" id="password_length" min="8" max="64" value="12" step="4">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="num_iterations" class="form-label">Iterations per Test: <span id="iter_val">5</span></label>
+                            <input type="range" class="form-range" id="num_iterations" min="3" max="10" value="5">
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="runBtn">
+                                <i class="bi bi-play-fill"></i> Run Benchmark
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="progress-container" class="mt-3" style="display: none;">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                        </div>
+                        <p class="text-center mt-2 mb-0"><small>Running benchmarks...</small></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow" id="optimal-card" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-trophy-fill"></i> Optimal Configuration</h5>
+                </div>
+                <div class="card-body" id="optimal-content">
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div id="alert-container"></div>
+            
+            <div id="results-container" style="display: none;">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark-bar-graph"></i> Benchmark Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="resultsTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Algorithm</th>
+                                        <th>Time Cost</th>
+                                        <th>Memory (KB)</th>
+                                        <th>Parallelism</th>
+                                        <th>Avg Time (ms)</th>
+                                        <th>CPU %</th>
+                                        <th>Memory (MB)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsBody">
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="/download/benchmark_results.csv" class="btn btn-success" download>
+                                <i class="bi bi-download"></i> Download CSV
+                            </a>
+                            <a href="/download/benchmark_analysis.png" class="btn btn-primary" download>
+                                <i class="bi bi-image"></i> Download Charts
+                            </a>
+                            <a href="/download/interactive_dashboard.html" class="btn btn-info" target="_blank">
+                                <i class="bi bi-graph-up"></i> Interactive Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="bi bi-bar-chart-fill"></i> Visualizations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="visualizations">
+                            <img src="/download/benchmark_analysis.png" class="img-fluid" alt="Benchmark Analysis" id="chartImage">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('password_length').addEventListener('input', function() {
+    document.getElementById('pwd_len_val').textContent = this.value;
+});
+
+document.getElementById('num_iterations').addEventListener('input', function() {
+    document.getElementById('iter_val').textContent = this.value;
+});
+
+document.getElementById('benchmarkForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const alertContainer = document.getElementById('alert-container');
+    const resultsContainer = document.getElementById('results-container');
+    const progressContainer = document.getElementById('progress-container');
+    const runBtn = document.getElementById('runBtn');
+    const optimalCard = document.getElementById('optimal-card');
+    
+    const time_costs = document.getElementById('time_costs').value.split(',').map(x => parseInt(x.trim()));
+    const memory_costs = document.getElementById('memory_costs').value.split(',').map(x => parseInt(x.trim()));
+    const parallelisms = document.getElementById('parallelisms').value.split(',').map(x => parseInt(x.trim()));
+    const password_length = parseInt(document.getElementById('password_length').value);
+    const num_iterations = parseInt(document.getElementById('num_iterations').value);
+    
+    runBtn.disabled = true;
+    progressContainer.style.display = 'block';
+    resultsContainer.style.display = 'none';
+    optimalCard.style.display = 'none';
+    
+    try {
+        const response = await fetch('/api/benchmark', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                time_costs,
+                memory_costs,
+                parallelisms,
+                password_length,
+                num_iterations
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alertContainer.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill"></i> Benchmark completed successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            
+            data.results.forEach(r => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><strong>${r.algorithm}</strong></td>
+                    <td>${r.time_cost || 'N/A'}</td>
+                    <td>${r.memory_cost || 'N/A'}</td>
+                    <td>${r.parallelism || 'N/A'}</td>
+                    <td>${r.time_per_hash_ms.toFixed(2)}</td>
+                    <td>${r.cpu_percent.toFixed(1)}</td>
+                    <td>${r.mem_MB.toFixed(2)}</td>
+                `;
+            });
+            
+            resultsContainer.style.display = 'block';
+            
+            if (data.optimal_config) {
+                const opt = data.optimal_config;
+                document.getElementById('optimal-content').innerHTML = `
+                    <p class="mb-2"><strong>Algorithm:</strong> ${opt.algorithm}</p>
+                    <p class="mb-2"><strong>Time Cost:</strong> ${opt.time_cost}</p>
+                    <p class="mb-2"><strong>Memory Cost:</strong> ${opt.memory_cost_kb} KB (${opt.memory_cost_mb.toFixed(0)} MB)</p>
+                    <p class="mb-2"><strong>Parallelism:</strong> ${opt.parallelism}</p>
+                    <hr>
+                    <p class="mb-2"><strong>Avg Hash Time:</strong> ${opt.avg_hash_time_ms} ms</p>
+                    <p class="mb-2"><strong>CPU Usage:</strong> ${opt.cpu_percent}%</p>
+                    <p class="mb-0"><strong>Memory Usage:</strong> ${opt.mem_mb} MB</p>
+                `;
+                optimalCard.style.display = 'block';
+            }
+            
+            setTimeout(() => {
+                document.getElementById('chartImage').src = '/download/benchmark_analysis.png?' + new Date().getTime();
+            }, 500);
+            
+        } else {
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Benchmark failed. Please try again.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+    } catch (error) {
+        alertContainer.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i> Network error. Please try again.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+    } finally {
+        runBtn.disabled = false;
+        progressContainer.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

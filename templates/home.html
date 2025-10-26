@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Argon2id Analysis{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="bi bi-shield-lock-fill text-primary"></i>
+                    Argon2id Performance Analysis
+                </h1>
+                <p class="lead mb-4">
+                    A comprehensive platform for analyzing and optimizing password hashing algorithms 
+                    with focus on Argon2id parameter tuning and comparative benchmarking.
+                </p>
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="{{ url_for('benchmark_page') }}" class="btn btn-primary btn-lg px-4">
+                        <i class="bi bi-speedometer2"></i> Run Benchmarks
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="bi bi-person-plus"></i> Get Started
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-3">
+                            <i class="bi bi-info-circle-fill text-info"></i> About Argon2id
+                        </h3>
+                        <p class="card-text">
+                            <strong>Argon2</strong> is the winner of the Password Hashing Competition (PHC) 
+                            and is recommended by OWASP for secure password storage. The <strong>Argon2id</strong> 
+                            variant combines resistance to both side-channel and GPU attacks.
+                        </p>
+                        <hr>
+                        <h5 class="mt-3">Key Parameters:</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-clock text-warning"></i> <strong>Time Cost:</strong> Number of iterations</li>
+                            <li><i class="bi bi-memory text-success"></i> <strong>Memory Cost:</strong> Memory usage in KB</li>
+                            <li><i class="bi bi-cpu text-danger"></i> <strong>Parallelism:</strong> Number of threads</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-primary">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h4>Secure Authentication</h4>
+                <p>Register and login with Argon2id-hashed passwords, following industry best practices.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-success">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <h4>Algorithm Comparison</h4>
+                <p>Compare Argon2id, bcrypt, scrypt, and PBKDF2 performance metrics side-by-side.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-warning">
+                    <i class="bi bi-sliders"></i>
+                </div>
+                <h4>Parameter Optimization</h4>
+                <p>Find the optimal balance between security and performance for your use case.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-info">
+                    <i class="bi bi-bar-chart-fill"></i>
+                </div>
+                <h4>Visual Analytics</h4>
+                <p>Interactive charts and heatmaps powered by Matplotlib and Plotly.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-danger">
+                    <i class="bi bi-activity"></i>
+                </div>
+                <h4>Real-time Monitoring</h4>
+                <p>Track CPU and memory usage during benchmark execution with psutil.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="icon-box bg-secondary">
+                    <i class="bi bi-download"></i>
+                </div>
+                <h4>Data Export</h4>
+                <p>Export results to CSV and download visualizations as PNG files.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading"><i class="bi bi-lightbulb-fill"></i> Getting Started</h4>
+        <p>
+            Start by <a href="{{ url_for('register') }}" class="alert-link">registering an account</a> to experience 
+            Argon2id password hashing in action, or jump straight to the 
+            <a href="{{ url_for('benchmark_page') }}" class="alert-link">benchmark page</a> to run performance tests.
+        </p>
+    </div>
+</div>
+{% endblock %}
