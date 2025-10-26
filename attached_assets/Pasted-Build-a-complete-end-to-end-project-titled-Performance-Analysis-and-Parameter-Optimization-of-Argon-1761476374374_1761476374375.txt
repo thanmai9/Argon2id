@@ -1,0 +1,155 @@
+Build a complete end-to-end project titled "Performance Analysis and Parameter Optimization of Argon2id for Secure Password Hashing".
+
+🔐 Project Overview
+
+Develop a Flask + MongoDB web application that:
+
+Lets users register and log in securely using Argon2id hashing (via argon2-cffi).
+
+Compares Argon2id, bcrypt, scrypt, and PBKDF2 hashing algorithms.
+
+Performs parameter optimization experiments for Argon2id (time_cost, memory_cost, parallelism) and logs the results.
+
+Displays real-time graphs (using Matplotlib/Plotly) for:
+
+Hash time vs Memory
+
+Throughput vs Parallelism
+
+Algorithm comparison heatmaps
+
+Outputs results to CSV and displays them visually.
+
+🧩 System Modules
+
+Frontend (HTML/JS/CSS)
+
+Home page with introduction about Argon2id.
+
+Registration and Login forms (username, password).
+
+Benchmark page with sliders/inputs for:
+
+Time cost
+
+Memory cost
+
+Parallelism
+
+Password length
+
+Button to run tests and view visualized results.
+
+Backend (Flask, Python)
+
+API endpoints:
+
+/register → Hashes password and stores hash + parameters in MongoDB.
+
+/login → Verifies Argon2id hash.
+
+/benchmark → Runs experiments across parameter grid and returns results as JSON/CSV.
+
+Benchmark logic uses:
+
+from argon2 import PasswordHasher
+from hashlib import pbkdf2_hmac
+import bcrypt, scrypt, time, psutil, csv
+
+
+Stores each test result as:
+
+algorithm, t, m, p, num_passwords, total_ms, time_per_hash_ms, mem_MB
+
+
+Database (MongoDB)
+
+Database: authdb
+
+Collections:
+
+users: {username, hash, algorithm, params}
+
+benchmarks: stores performance test results.
+
+Visualization
+
+Use Matplotlib or Plotly to show:
+
+Line charts (time per hash vs memory).
+
+Bar charts (algorithms vs average time).
+
+Heatmaps (parameter tuning results).
+
+Export CSV and PNG plots automatically to /results.
+
+🧠 Algorithms and Parameters
+
+Implement and benchmark:
+
+Argon2id (via argon2-cffi)
+
+bcrypt
+
+scrypt
+
+PBKDF2 (hashlib.pbkdf2_hmac)
+
+Parameter grid for Argon2id:
+
+time_cost = [1, 2, 4]
+memory_cost = [16384, 65536, 262144, 1048576]  # 16MB–1GB
+parallelism = [1, 2, 4, 8]
+password_len = [12, 64]
+
+
+Each benchmark should:
+
+Record average of 5 runs.
+
+Log CPU usage, RAM usage, and total time.
+
+Write data into benchmark_results.csv.
+
+⚙️ Tech Stack
+
+Backend: Python 3, Flask
+
+Database: MongoDB
+
+Frontend: HTML, CSS, JS (Bootstrap)
+
+Visualization: Matplotlib / Plotly
+
+Monitoring: psutil, time.perf_counter
+
+📊 Output
+
+Show the following outputs clearly:
+
+Average hash time per algorithm.
+
+Graphs comparing Argon2id vs others.
+
+Recommended optimal parameters based on performance-security balance.
+
+Export CSV and PNG graphs.
+
+🧾 Example Output
+Algorithm: Argon2id
+Optimal parameters: time_cost=2, memory_cost=65536KB, parallelism=2
+Average hashing time: 312.5 ms
+CPU usage: 22%
+
+📂 Deliverables
+
+/app.py → Flask backend
+
+/templates/ → HTML pages
+
+/static/ → JS/CSS
+
+/results/ → CSV and graphs
+
+requirements.txt → Dependencies
