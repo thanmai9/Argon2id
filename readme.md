@@ -56,4 +56,9 @@ None specified yet.
 - Responsive Bootstrap UI
   
 ## Output
-<img width="470" height="768" alt="Screenshot 2026-02-08 194319" src="https://github.com/user-attachments/assets/a69987f6-9c3a-4d64-85c3-3ef65ddf0da9" />
+<img width="1639" height="865" alt="Screenshot 2026-02-09 140054" src="https://github.com/user-attachments/assets/b39d5d9d-37a7-478c-9416-a8e35fb981ee" />
+<img width="1566" height="787" alt="Screenshot 2026-02-09 140103" src="https://github.com/user-attachments/assets/02aa9d67-3ccc-4df1-bdf9-287c1c0e5bbd" />
+<img width="1010" height="867" alt="Screenshot 2026-02-09 140112" src="https://github.com/user-attachments/assets/e47b202e-57a8-4ba9-b646-d5fd97e6091b" />
+
+
+
