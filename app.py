@@ -453,4 +453,4 @@ def download_file(filename):
 
 if __name__ == '__main__':
     os.makedirs('results', exist_ok=True)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=False, use_reloader=False, host="127.0.0.1", port=5000)
