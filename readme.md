@@ -54,3 +54,6 @@ None specified yet.
 - Session-based authentication
 - Asynchronous benchmarking with performance monitoring
 - Responsive Bootstrap UI
+  
+## Output
+<img width="470" height="768" alt="Screenshot 2026-02-08 194319" src="https://github.com/user-attachments/assets/a69987f6-9c3a-4d64-85c3-3ef65ddf0da9" />
